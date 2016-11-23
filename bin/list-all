@@ -12,4 +12,5 @@ fi
 
 # Fetch all tag names, and get only second column. Then remove all unnecesary characters.
 versions=$(eval $cmd | grep -oE ':[0-9\.]+' | sed 's/://' | $sort_cmd)
-echo $versions master
+
+echo $versions
