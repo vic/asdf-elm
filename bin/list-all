@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+releases_path=https://dl.bintray.com/elmlang/elm-platform/
+
+cmd="curl -s"
+cmd="$cmd $releases_path"
+
+sort_cmd='sort'
+if sort --help | grep -q -- '-V'; then
+  sort_cmd='sort -V'
+fi
+
+# Fetch all tag names, and get only second column. Then remove all unnecesary characters.
+versions=$(eval $cmd | grep -oE ':[0-9\.]+' | sed 's/://' | $sort_cmd)
+echo $versions master

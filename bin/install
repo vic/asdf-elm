@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+
+install_elm() {
+  local install_type=$1
+  local version=$2
+  local install_path=$3
+
+  if [ "$TMPDIR" = "" ]; then
+    local tmp_download_dir=$(mktemp -d -t elm_build_XXXXXX)
+  else
+    local tmp_download_dir=$TMPDIR
+  fi
+
+  # path to the tar file
+  local source_path=$(get_download_file_path $install_type $version $tmp_download_dir)
+  download_source_file $install_type $version $source_path
+
+  # running this in a subshell
+  # we don't want to disturb current working dir
+  (
+    mkdir -p $install_path/bin
+    tar zxf $source_path -C $install_path/bin --strip-components=1 || exit 1
+  )
+}
+
+
+download_source_file() {
+  local install_type=$1
+  local version=$2
+  local download_path=$3
+  local download_url=$(get_download_url $install_type $version)
+
+  echo $download_url
+
+  curl -Lo $download_path $download_url
+}
+
+
+get_download_file_path() {
+  local install_type=$1
+  local version=$2
+  local tmp_download_dir=$3
+
+  local pkg_name="elm-${install_type}-${version}-src.tar.gz"
+
+  echo "$tmp_download_dir/$pkg_name"
+}
+
+get_platform() {
+  local os=$(uname -s | tr '[A-Z]' '[a-z]')
+
+  if [ "darwin" == "$os" ]; then
+    echo "darwin-x64"
+    return 0
+  fi
+
+  local machine=$(uname -m)
+  if [ "x86_64" == "$machine" ]; then
+    echo "$os-x64"
+    return 0
+  fi
+
+  echo "Could not determine OS platform."
+  echo "Please open a bug report for asdf-elm"
+  exit 1
+}
+
+
+get_download_url() {
+  local install_type=$1
+  local version=$2
+
+  if [ "$install_type" = "version" ]
+  then
+    echo "https://dl.bintray.com/elmlang/elm-platform/$version/$(get_platform).tar.gz"
+  else
+    echo "asdf-elm: Can only install versioned binaries."
+    echo "If you want to install another version from source, read:"
+    echo "https://guide.elm-lang.org/install.html"
+    exit 1
+  fi
+}
+
+
+install_elm $ASDF_INSTALL_TYPE $ASDF_INSTALL_VERSION $ASDF_INSTALL_PATH
