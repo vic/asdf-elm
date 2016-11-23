@@ -70,7 +70,7 @@ get_download_url() {
   local install_type=$1
   local version=$2
 
-  if [ "$install_type" = "version" ]
+  if [ "$install_type" == "version" ]
   then
     echo "https://dl.bintray.com/elmlang/elm-platform/$version/$(get_platform).tar.gz"
   else

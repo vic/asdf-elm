@@ -13,7 +13,9 @@ fi
 # Fetch all tag names, and get only second column. Then remove all unnecesary characters.
 versions=$(eval $cmd | grep -oE ':[0-9\.]+' | sed 's/://' | $sort_cmd)
 
-if ["Linux" == "$(uname -s)"]; then
+os=$(uname -s)
+
+if [ "Linux" == "$os" ]; then
   versions="$versions master"
 fi
 
