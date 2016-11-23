@@ -4,9 +4,9 @@
 
 ## Install
 
-```
+```shell
 asdf plugin-add elm https://github.com/vic/asdf-elm.git
-
+```
 
 ## Use
 
