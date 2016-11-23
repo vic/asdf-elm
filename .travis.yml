@@ -1,5 +1,5 @@
 language: c
-script: asdf plugin-test lfe https://github.com/vic/asdf-elm.git
+script: asdf plugin-test elm https://github.com/vic/asdf-elm.git
 before_script:
   - git clone https://github.com/asdf-vm/asdf.git
   - . asdf/asdf.sh
