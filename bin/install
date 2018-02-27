@@ -32,7 +32,12 @@ download_source_file() {
 
   echo $download_url
 
-  curl -Lo $download_path $download_url
+  curl --fail -Lo $download_path $download_url || die "error fetching $download_url"
+}
+
+die() {
+  echo $1
+  exit 1
 }
 
 
