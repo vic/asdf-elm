@@ -11,7 +11,7 @@ if sort --help | grep -q -- '-V'; then
 fi
 
 # Fetch all tag names, and get only second column. Then remove all unnecesary characters.
-versions=$(eval $cmd | grep -oE ':[0-9\.]+' | sed 's/://' | $sort_cmd)
+versions=$(eval $cmd | grep -oE ':[0-9\.]+(-\w+)?\/' | sed 's/://' | $sort_cmd)
 
 os=$(uname -s)
 
