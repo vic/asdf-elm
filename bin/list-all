@@ -3,6 +3,11 @@
 releases_path=https://dl.bintray.com/elmlang/elm-platform/
 
 cmd="curl -s"
+
+if [ -n "$GITHUB_API_TOKEN" ]; then
+  cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
+fi
+
 cmd="$cmd $releases_path"
 
 sort_cmd='sort'
