@@ -1,27 +1,33 @@
 #!/usr/bin/env bash
+bintray_releases() {
+  releases_path=https://dl.bintray.com/elmlang/elm-platform/
+  cmd="curl -s"
 
-releases_path=https://dl.bintray.com/elmlang/elm-platform/
+  if [ -n "$GITHUB_API_TOKEN" ]; then
+    cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
+  fi
 
-cmd="curl -s"
+  cmd="$cmd $releases_path"
 
-if [ -n "$GITHUB_API_TOKEN" ]; then
-  cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
-fi
+  sort_cmd='sort'
+  if sort --help | grep -q -- '-V'; then
+    sort_cmd='sort -V'
+  fi
 
-cmd="$cmd $releases_path"
+  # Fetch all tag names, and get only second column. Then remove all unnecesary characters.
+  versions=$(eval $cmd | grep -oE ':[0-9\.]+(-\w+)?' | sed 's/://' | $sort_cmd)
 
-sort_cmd='sort'
-if sort --help | grep -q -- '-V'; then
-  sort_cmd='sort -V'
-fi
+  os=$(uname -s)
 
-# Fetch all tag names, and get only second column. Then remove all unnecesary characters.
-versions=$(eval $cmd | grep -oE ':[0-9\.]+(-\w+)?' | sed 's/://' | $sort_cmd)
+  if [ "Linux" == "$os" ]; then
+    versions="$versions master"
+  fi
+  echo $versions
+}
 
-os=$(uname -s)
+github_releases() {
+  github_releases_path=https://api.github.com/repos/elm/compiler/releases
+  curl -s $github_releases_path | jq -r '.[] | .tag_name'
+}
 
-if [ "Linux" == "$os" ]; then
-  versions="$versions master"
-fi
-
-echo $versions
+echo $(bintray_releases) $(github_releases)
