@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-bintray_versions='0.15.1 0.16.0 0.16 0.17.1 0.18.0 master'
+bintray_versions='0.15.1 0.16.0 0.16 0.17.1 0.18.0-alpha 0.18.0 master'
 install_elm() {
   local install_type=$1
   local version=$2
