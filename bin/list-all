@@ -27,7 +27,7 @@ bintray_releases() {
 
 github_releases() {
   github_releases_path=https://api.github.com/repos/elm/compiler/releases
-  curl -s $github_releases_path | jq -r '.[] | .tag_name'
+  curl -s $github_releases_path | grep -oE '\"tag_name\"\: \"(.*)\"' | cut -d: -f2 | tr -d '"'
 }
 
 echo $(bintray_releases) $(github_releases)
