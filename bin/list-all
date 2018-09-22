@@ -1,33 +1,36 @@
 #!/usr/bin/env bash
+
 bintray_releases() {
-  releases_path=https://dl.bintray.com/elmlang/elm-platform/
-  cmd="curl -s"
-
-  if [ -n "$GITHUB_API_TOKEN" ]; then
-    cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
-  fi
-
+  local releases_path=https://dl.bintray.com/elmlang/elm-platform/
+  local cmd="curl -s"
   cmd="$cmd $releases_path"
 
-  sort_cmd='sort'
-  if sort --help | grep -q -- '-V'; then
-    sort_cmd='sort -V'
-  fi
-
   # Fetch all tag names, and get only second column. Then remove all unnecesary characters.
-  versions=$(eval $cmd | grep -oE ':[0-9\.]+(-\w+)?' | sed 's/://' | $sort_cmd)
-
-  os=$(uname -s)
-
-  if [ "Linux" == "$os" ]; then
-    versions="$versions master"
-  fi
-  echo $versions
+  eval $cmd | grep -oE ':[0-9\.]+(-\w+)?' | sed 's/://'
 }
 
 github_releases() {
-  github_releases_path=https://api.github.com/repos/elm/compiler/releases
-  curl -s $github_releases_path | grep -oE '\"tag_name\"\: \"(.*)\"' | cut -d: -f2 | tr -d '"'
+  local github_releases_path=https://api.github.com/repos/elm/compiler/releases
+
+  local cmd="curl -s"
+
+  if [ -n "$GITHUB_API_TOKEN" ]; then
+      cmd="$cmd -H 'Authorization: token $GITHUB_API_TOKEN'"
+  fi
+
+  cmd="$cmd $github_releases_path"
+
+  eval $cmd | grep -oE '\"tag_name\"\: \"(.*)\"' | cut -d: -f2 | tr -d '"'
 }
 
-echo $(bintray_releases) $(github_releases)
+elm_releases() {
+  echo "$(bintray_releases) $(github_releases)"
+}
+
+# stolen from https://github.com/rbenv/ruby-build/pull/631/files#diff-fdcfb8a18714b33b07529b7d02b54f1dR942
+function sort_versions() {
+    sed 'h; s/[+-]/./g; s/.p\([[:digit:]]\)/.z\1/; s/$//; G; s/\n/ /' | \
+        LC_ALL=C sort -t. -k 1,1 -k 2,2n -k 3,3n -k 4,4n -k 5,5n | awk '{print $2}'
+}
+
+echo $(elm_releases | sort_versions)
