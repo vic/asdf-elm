@@ -20,7 +20,7 @@ github_releases() {
 
   cmd="$cmd $github_releases_path"
 
-  eval $cmd | grep -oE '\"tag_name\"\: \"(.*)\"' | cut -d: -f2 | tr -d '"'
+  eval $cmd | grep -oE '\"tag_name\"\: \"(.*)\"' | cut -d: -f2 | tr -d '"' | sort
 }
 
 elm_releases() {
