@@ -23,7 +23,7 @@ install_elm() {
     then
       tar zxf $source_path -C $install_path/bin --strip-components=1 || exit 1
     else
-      tar zxf $source_path -C $install_path/bin || exit 1
+      gunzip $source_path -c > $install_path/bin/elm && chmod +x $install_path/bin/elm || exit 1
     fi
   )
 }
@@ -105,7 +105,7 @@ get_download_url() {
     then
       echo "https://dl.bintray.com/elmlang/elm-platform/$version/$(get_platform_pre_19).tar.gz"
     else
-      echo "https://github.com/elm/compiler/releases/download/$version/binaries-for-$(get_platform_post_19).tar.gz"
+      echo "https://github.com/elm/compiler/releases/download/$version/binary-for-$(get_platform_post_19)-64-bit.gz"
     fi
   else
     echo "asdf-elm: Can only install versioned binaries."
